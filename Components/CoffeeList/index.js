@@ -23,35 +23,56 @@ import styles from "./styles";
 import { quantityCounter } from "../../utilities/quantityCounter";
 
 class CoffeeList extends Component {
-  static navigationOptions = ({ navigation }) => ({
-    title: "Coffee List",
-    headerLeft: null,
-    headerRight: (
-      <Button
-        light
-        transparent
-        onPress={() => navigation.navigate("CoffeeCart")}
-      >
-        <Text>
-          {navigation.getParam("quantity", 0)}{" "}
-          <Icon
-            type="FontAwesome"
-            name="coffee"
-            style={{ color: "white", fontSize: 15 }}
-          />
-        </Text>
-      </Button>
-    )
-  });
+  static navigationOptions = ({ navigation }) => {
+    // console.log(navigation.getParam("isAuthenticated", false));
+    return {
+      title: "Coffee List",
+      headerLeft: null,
+      headerRight: (
+        <Button
+          light
+          transparent
+          onPress={() =>
+            navigation.getParam("isAuthenticated", false)
+              ? navigation.navigate("CoffeeCart")
+              : navigation.navigate("Login")
+          }
+        >
+          <Text>
+            {navigation.getParam("quantity", 0)}
+            <Icon
+              type="FontAwesome"
+              name="coffee"
+              style={{ color: "white", fontSize: 15 }}
+            />
+          </Text>
+        </Button>
+      )
+    };
+  };
 
   componenDidMount() {
-    this.props.navigation.setParams({ quantity: this.props.quantity });
+    this.props.navigation.setParams({
+      quantity: this.props.quantity
+    });
+    this.props.navigation.setParams({
+      isAuthenticated: this.props.isAuthenticated
+    });
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.quantity != this.props.quantity) {
-      this.props.navigation.setParams({ quantity: this.props.quantity });
+    if (prevProps.quantity !== this.props.quantity) {
+      this.props.navigation.setParams({
+        quantity: this.props.quantity
+      });
     }
+    if (this.props.isAuthenticated !== prevProps.isAuthenticated) {
+      this.props.navigation.setParams({
+        isAuthenticated: this.props.isAuthenticated
+      });
+    }
+    console.log("AUTH", this.props.navigation.getParam("isAuthenticated"));
+    console.log("Q", this.props.navigation.getParam("quantity"));
   }
 
   handlePress(shop) {
@@ -104,10 +125,14 @@ class CoffeeList extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  coffee: state.coffee,
-  quantity: quantityCounter(state.cart.list)
-});
+const mapStateToProps = state => {
+  return {
+    coffee: state.coffee,
+    user: state.auth.user,
+    isAuthenticated: state.auth.isAuthenticated,
+    quantity: quantityCounter(state.cart.list)
+  };
+};
 
 export default connect(
   mapStateToProps,

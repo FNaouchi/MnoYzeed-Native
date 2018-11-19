@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import * as actionCreators from "../../store/actions/authActions";
 
 // NativeBase Components
 import {
@@ -20,6 +21,20 @@ class Login extends Component {
   static navigationOptions = {
     title: "Login"
   };
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: "",
+      password: ""
+    };
+  }
+  handelLogin() {
+    this.props.login(this.state, this.props.navigation);
+  }
+  handelSignup() {
+    this.props.signup(this.state, this.props.navigation);
+    console.log(this.state);
+  }
   render() {
     return (
       <Content>
@@ -39,7 +54,12 @@ class Login extends Component {
                     marginBottom: 10
                   }}
                 >
-                  <Input autoCorrect={false} autoCapitalize="none" />
+                  <Input
+                    autoCorrect={false}
+                    autoCapitalize="none"
+                    name="username"
+                    onChangeText={value => this.setState({ username: value })}
+                  />
                 </Item>
                 <Body>
                   <Label style={{ color: "white" }}>Password</Label>
@@ -52,23 +72,17 @@ class Login extends Component {
                     autoCorrect={false}
                     secureTextEntry
                     autoCapitalize="none"
+                    name="password"
+                    onChangeText={value => this.setState({ password: value })}
                   />
                 </Item>
               </Form>
             </Body>
           </ListItem>
-          <Button
-            full
-            success
-            onPress={() => this.props.navigation.navigate("CoffeeList")}
-          >
+          <Button full success onPress={() => this.handelLogin()}>
             <Text>Login</Text>
           </Button>
-          <Button
-            full
-            warning
-            onPress={() => this.props.navigation.navigate("CoffeeList")}
-          >
+          <Button full warning onPress={() => this.handelSignup()}>
             <Text>Register</Text>
           </Button>
         </List>
@@ -80,4 +94,16 @@ class Login extends Component {
   }
 }
 
-export default Login;
+const mapDispatchToProps = dispatch => {
+  return {
+    signup: (userData, navigation) =>
+      dispatch(actionCreators.registerUser(userData, navigation)),
+    login: (userData, navigation) =>
+      dispatch(actionCreators.loginUser(userData, navigation))
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(Login);
