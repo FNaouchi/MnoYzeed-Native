@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { ImageBackground, View, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
-
+import * as actionCreators from "../../store/actions/authActions";
 // NativeBase Components
 import {
   List,
@@ -24,7 +24,6 @@ import { quantityCounter } from "../../utilities/quantityCounter";
 
 class CoffeeList extends Component {
   static navigationOptions = ({ navigation }) => {
-    // console.log(navigation.getParam("isAuthenticated", false));
     return {
       title: "Coffee List",
       headerLeft: null,
@@ -32,11 +31,7 @@ class CoffeeList extends Component {
         <Button
           light
           transparent
-          onPress={() =>
-            navigation.getParam("isAuthenticated", false)
-              ? navigation.navigate("CoffeeCart")
-              : navigation.navigate("Login")
-          }
+          onPress={() => navigation.navigate("CoffeeCart")}
         >
           <Text>
             {navigation.getParam("quantity", 0)}
@@ -71,8 +66,6 @@ class CoffeeList extends Component {
         isAuthenticated: this.props.isAuthenticated
       });
     }
-    console.log("AUTH", this.props.navigation.getParam("isAuthenticated"));
-    console.log("Q", this.props.navigation.getParam("quantity"));
   }
 
   handlePress(shop) {
@@ -120,6 +113,47 @@ class CoffeeList extends Component {
     return (
       <Content>
         <List>{ListItems}</List>
+        {this.props.user ? (
+          <Button
+            light
+            onPress={() => this.props.logout()}
+            style={{
+              marginLeft: 140,
+              backgroundColor: "green",
+              marginTop: 50
+            }}
+            className="btn"
+          >
+            <Text style={{ color: "white" }}>
+              Logout
+              <Icon
+                type="MaterialCommunityIcons"
+                name="logout"
+                style={{ color: "white", fontSize: 15 }}
+              />
+            </Text>
+          </Button>
+        ) : (
+          <Button
+            light
+            onPress={() => this.props.navigation.navigate("Login")}
+            style={{
+              marginLeft: 140,
+              backgroundColor: "green",
+              marginTop: 50
+            }}
+            className="btn"
+          >
+            <Text style={{ color: "white" }}>
+              Login
+              <Icon
+                type="MaterialCommunityIcons"
+                name="login"
+                style={{ color: "white", fontSize: 15 }}
+              />
+            </Text>
+          </Button>
+        )}
       </Content>
     );
   }
@@ -133,8 +167,10 @@ const mapStateToProps = state => {
     quantity: quantityCounter(state.cart.list)
   };
 };
-
+const mapActionsToProps = dispatch => ({
+  logout: () => dispatch(actionCreators.logout())
+});
 export default connect(
   mapStateToProps,
-  {}
+  mapActionsToProps
 )(CoffeeList);

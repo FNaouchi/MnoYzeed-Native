@@ -28,6 +28,12 @@ class CoffeeCart extends Component {
     this.props.removeItemFromCart(item);
   }
 
+  componentDidMount() {
+    console.log(this.props.user);
+    if (!this.props.user) {
+      this.props.navigation.replace("Login");
+    }
+  }
   renderItem(item, index) {
     return (
       <ListItem key={index}>
@@ -63,7 +69,8 @@ class CoffeeCart extends Component {
 }
 
 const mapStateToProps = state => ({
-  cart: state.cart
+  cart: state.cart,
+  user: state.auth.user
 });
 
 const mapActionsToProps = dispatch => ({

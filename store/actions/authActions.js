@@ -18,7 +18,6 @@ export const checkForExpiredToken = () => {
     // Get token
     AsyncStorage.getItem("token")
       .then(token => {
-        console.log("hi?");
         if (token) {
           const currentTime = Date.now() / 1000;
           // Decode token and get user info
