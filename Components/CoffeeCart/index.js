@@ -27,9 +27,7 @@ class CoffeeCart extends Component {
   handleRemove(item) {
     this.props.removeItemFromCart(item);
   }
-
   componentDidMount() {
-    console.log(this.props.user);
     if (!this.props.user) {
       this.props.navigation.replace("Login");
     }

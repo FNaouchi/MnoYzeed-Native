@@ -21,10 +21,10 @@ import {
 class Login extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: "Login",
+      title: "Signup",
       headerRight: (
-        <Button light transparent onPress={() => navigation.replace("Signup")}>
-          <Text>Signup</Text>
+        <Button light transparent onPress={() => navigation.replace("Login")}>
+          <Text>Login</Text>
         </Button>
       )
     };
@@ -33,11 +33,15 @@ class Login extends Component {
     super(props);
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      email: "",
+      firstName: "",
+      lastName: ""
     };
   }
-  handelLogin() {
-    this.props.login(this.state, this.props.navigation);
+  handelSignup() {
+    this.props.signup(this.state, this.props.navigation);
+    console.log(this.state);
   }
   render() {
     return (
@@ -80,11 +84,56 @@ class Login extends Component {
                     onChangeText={value => this.setState({ password: value })}
                   />
                 </Item>
+                <Body>
+                  <Label style={{ color: "white" }}>Email</Label>
+                </Body>
+                <Item
+                  rounded
+                  style={{ backgroundColor: "white", marginTop: 10 }}
+                >
+                  <Input
+                    autoCorrect={false}
+                    secureTextEntry
+                    autoCapitalize="none"
+                    name="email"
+                    onChangeText={value => this.setState({ email: value })}
+                  />
+                </Item>
+                <Body>
+                  <Label style={{ color: "white" }}>First Name</Label>
+                </Body>
+                <Item
+                  rounded
+                  style={{ backgroundColor: "white", marginTop: 10 }}
+                >
+                  <Input
+                    autoCorrect={false}
+                    secureTextEntry
+                    autoCapitalize="none"
+                    name="First Name"
+                    onChangeText={value => this.setState({ firstName: value })}
+                  />
+                </Item>
+                <Body>
+                  <Label style={{ color: "white" }}>Last Name</Label>
+                </Body>
+                <Item
+                  rounded
+                  style={{ backgroundColor: "white", marginTop: 10 }}
+                >
+                  <Input
+                    autoCorrect={false}
+                    secureTextEntry
+                    autoCapitalize="none"
+                    name="Last Name"
+                    onChangeText={value => this.setState({ lastName: value })}
+                  />
+                </Item>
               </Form>
             </Body>
           </ListItem>
-          <Button full success onPress={() => this.handelLogin()}>
-            <Text>Login</Text>
+          <Button full warning onPress={() => this.handelSignup()}>
+            <Text>Register</Text>
           </Button>
         </List>
         <Body>
@@ -97,8 +146,8 @@ class Login extends Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    login: (userData, navigation) =>
-      dispatch(actionCreators.loginUser(userData, navigation))
+    signup: (userData, navigation) =>
+      dispatch(actionCreators.registerUser(userData, navigation))
   };
 };
 

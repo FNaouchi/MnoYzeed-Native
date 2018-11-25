@@ -6,13 +6,15 @@ import CoffeeList from "../CoffeeList";
 import CoffeeDetail from "../CoffeeDetail";
 import CoffeeCart from "../CoffeeCart";
 import Login from "../Login";
+import Signup from "../Signup";
 
 export default createStackNavigator(
   {
     CoffeeList: CoffeeList,
     CoffeeDetail: CoffeeDetail,
     CoffeeCart: CoffeeCart,
-    Login: Login
+    Login: Login,
+    Signup: Signup
   },
   {
     initialRouteName: "CoffeeList",

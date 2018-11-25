@@ -39,7 +39,7 @@ export const checkForExpiredToken = () => {
 export const loginUser = (userData, navigation) => {
   return dispatch => {
     axios
-      .post("http://coffee.q8fawazo.me/api/login/", userData)
+      .post("http://127.0.0.1:8000/api/login/", userData)
       .then(res => res.data)
       .then(user => {
         const decodedUser = jwt_decode(user.token);
@@ -55,8 +55,15 @@ export const loginUser = (userData, navigation) => {
 export const registerUser = (userData, navigation) => {
   return dispatch => {
     axios
-      .post("http://coffee.q8fawazo.me/api/register/", userData)
-      .then(() => dispatch(loginUser(userData, navigation)))
+      .post("http://127.0.0.1:8000/api/register/", userData)
+      .then(() =>
+        dispatch(
+          loginUser(
+            { username: userData.username, password: userData.password },
+            navigation
+          )
+        )
+      )
       .catch(error => console.log(error.response.data));
   };
 };
