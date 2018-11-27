@@ -1,66 +1,57 @@
 import React, { Component } from "react";
-import { ImageBackground, View, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
-import * as actionCreators from "../../store/actions/authActions";
+import { ImageBackground, View, TouchableOpacity } from "react-native";
 // NativeBase Components
 import {
+  Thumbnail,
+  Text,
+  Button,
+  Left,
+  Body,
+  Right,
+  Icon,
   List,
   ListItem,
-  Card,
-  CardItem,
-  Button,
-  Text,
-  Left,
+  Picker,
   Content,
-  Icon
+  Card,
+  CardItem
 } from "native-base";
 
 // Style
 import styles from "./styles";
 
 // Actions
+import { addItemToCart } from "../../store/actions/cartActions";
 import { quantityCounter } from "../../utilities/quantityCounter";
 
-class CoffeeList extends Component {
-  static navigationOptions = ({ navigation }) => {
-    return {
-      title: "Categories",
-      headerLeft: null,
-      headerRight: (
-        <Button
-          light
-          transparent
-          onPress={() => navigation.navigate("CoffeeCart")}
-        >
-          <Text>
-            <Icon
-              type="FontAwesome"
-              name="coffee"
-              style={{ color: "white", fontSize: 15 }}
-            />
-          </Text>
-        </Button>
-      )
-    };
-  };
-
-  componenDidMount() {
-    this.props.navigation.setParams({
-      isAuthenticated: this.props.isAuthenticated
-    });
-    if (this.props.isAuthenticated) {
-      this.props.navigation.setParams({
-        type: "FontAwesome",
-        name: "coffee",
-        screen: "CoffeeCart"
-      });
-    }
+class ItemsList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
   }
 
-  componentDidUpdate(prevProps) {}
+  static navigationOptions = ({ navigation }) => ({
+    title: navigation.getParam("item", {}).name,
+    headerRight: (
+      <Button
+        light
+        transparent
+        onPress={() => navigation.navigate("CoffeeCart")}
+      >
+        <Text>
+          <Icon
+            type="FontAwesome"
+            name="coffee"
+            style={{ color: "white", fontSize: 15 }}
+          />
+        </Text>
+      </Button>
+    )
+  });
 
   handlePress(item) {
-    this.props.navigation.navigate("CoffeeDetail", {
+    this.props.navigation.navigate("ItemsList", {
       item: item
     });
   }
@@ -92,9 +83,10 @@ class CoffeeList extends Component {
     );
   }
   render() {
+    let ItemsList = this.props.navigation.getParam("item", {});
     let ListItems;
-    if (this.props.category) {
-      ListItems = this.props.category.map(item => this.renderItem(item));
+    if (ItemsList) {
+      ListItems = ItemsList.items.map(item => this.renderItem(item));
     }
     return (
       <Content>
@@ -145,19 +137,16 @@ class CoffeeList extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    coffee: state.coffee,
-    user: state.auth.user,
-    category: state.cat.items,
-    isAuthenticated: state.auth.isAuthenticated,
-    quantity: quantityCounter(state.cart.list)
-  };
-};
-const mapActionsToProps = dispatch => ({
-  logout: () => dispatch(actionCreators.logout())
+const mapStateToProps = state => ({
+  cart: state.cart,
+  quantity: quantityCounter(state.cart.list)
 });
+
+const mapActionsToProps = dispatch => ({
+  addItemToCart: (item, cart) => dispatch(addItemToCart(item, cart))
+});
+
 export default connect(
   mapStateToProps,
   mapActionsToProps
-)(CoffeeList);
+)(ItemsList);

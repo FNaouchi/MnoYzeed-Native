@@ -4,6 +4,7 @@ import { createStackNavigator } from "react-navigation";
 // Components
 import CoffeeList from "../CoffeeList";
 import CoffeeDetail from "../CoffeeDetail";
+import ItemsList from "../ItemsList";
 import CoffeeCart from "../CoffeeCart";
 import Login from "../Login";
 import Signup from "../Signup";
@@ -11,6 +12,7 @@ import Signup from "../Signup";
 export default createStackNavigator(
   {
     CoffeeList: CoffeeList,
+    ItemsList: ItemsList,
     CoffeeDetail: CoffeeDetail,
     CoffeeCart: CoffeeCart,
     Login: Login,
@@ -28,7 +30,7 @@ export default createStackNavigator(
       }
     },
     cardStyle: {
-      backgroundColor: "rgb(20,90,100)"
+      backgroundColor: "grey"
     }
   }
 );

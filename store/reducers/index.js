@@ -4,9 +4,11 @@ import { combineReducers } from "redux";
 import coffeeReducer from "./coffeeReducer";
 import cartReducer from "./cartReducer";
 import authReducer from "./authReducer";
+import catReducer from "./categoryReducer";
 
 export default combineReducers({
   coffee: coffeeReducer,
   cart: cartReducer,
-  auth: authReducer
+  auth: authReducer,
+  cat: catReducer
 });

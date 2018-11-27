@@ -35,9 +35,18 @@ const styles = StyleSheet.create({
     opacity: 1
   },
   background: {
-    height: 180,
+    height: "100%",
     width: null,
     flex: 1
+  },
+  listitem: {
+    backgroundColor: "transparent",
+    borderTopWidth: 0,
+    borderRightWidth: 0,
+    borderLeftWidth: 0,
+    borderBottomWidth: 0,
+    flexDirection: "row",
+    height: 180
   }
 });
 export default styles;

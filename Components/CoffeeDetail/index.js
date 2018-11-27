@@ -1,19 +1,17 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-
+import { ImageBackground, View, TouchableOpacity } from "react-native";
 // NativeBase Components
 import {
-  Thumbnail,
   Text,
   Button,
   Left,
-  Body,
-  Right,
   Icon,
   List,
   ListItem,
-  Picker,
-  Content
+  Content,
+  Card,
+  CardItem
 } from "native-base";
 
 // Style
@@ -26,14 +24,11 @@ import { quantityCounter } from "../../utilities/quantityCounter";
 class CoffeeDetail extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      drink: "Coffee",
-      option: "Small"
-    };
+    this.state = {};
   }
 
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam("shop", {}).name,
+    title: navigation.getParam("item", {}).name,
     headerRight: (
       <Button
         light
@@ -41,7 +36,6 @@ class CoffeeDetail extends Component {
         onPress={() => navigation.navigate("CoffeeCart")}
       >
         <Text>
-          {navigation.getParam("quantity", 0)}{" "}
           <Icon
             type="FontAwesome"
             name="coffee"
@@ -52,96 +46,95 @@ class CoffeeDetail extends Component {
     )
   });
 
-  componenDidMount() {
-    this.props.navigation.setParams({ quantity: this.props.quantity });
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.quantity != this.props.quantity) {
-      this.props.navigation.setParams({ quantity: this.props.quantity });
-    }
-  }
-
-  changeDrink(value) {
-    this.setState({
-      drink: value
+  handlePress(item) {
+    this.props.navigation.navigate("ItemsList", {
+      item: item
     });
   }
 
-  changeOption(value) {
-    this.setState({
-      option: value
-    });
+  renderItem(item) {
+    return (
+      <ImageBackground
+        source={{ uri: item.logo }}
+        key={item.id}
+        style={styles.background}
+      >
+        <View style={styles.overlay} />
+        <ListItem
+          style={styles.listitem}
+          button
+          onPress={() => this.handlePress(item)}
+        >
+          <Card style={styles.transparent}>
+            <CardItem style={styles.transparent}>
+              <Left>
+                <Text style={{ color: "white", fontSize: 25 }}>
+                  {item.name}
+                </Text>
+              </Left>
+            </CardItem>
+          </Card>
+        </ListItem>
+      </ImageBackground>
+    );
   }
-
-  handleAdd() {
-    const { drink, option } = this.state;
-    const { list } = this.props.cart;
-    let item = {
-      drink: drink,
-      option: option,
-      quantity: 1
-    };
-    this.props.addItemToCart(item, list);
-  }
-
   render() {
-    const coffeeshop = this.props.navigation.getParam("shop", {});
+    let itemTypes = this.props.navigation.getParam("item", {});
+    let ListItems;
+    if (itemTypes) {
+      ListItems = itemTypes.item_types.map(item => this.renderItem(item));
+    }
     return (
       <Content>
-        <List>
-          <ListItem style={styles.top}>
-            <Left>
-              <Text style={styles.text}>
-                {coffeeshop.name + "\n"}
-                <Text note>{coffeeshop.location}</Text>
-              </Text>
-            </Left>
-            <Body />
-            <Right>
-              <Thumbnail bordered source={{ uri: coffeeshop.img }} />
-            </Right>
-          </ListItem>
-          <ListItem style={{ borderBottomWidth: 0 }}>
-            <Left>
-              <Picker
-                note
-                mode="dropdown"
-                style={{ width: 150 }}
-                selectedValue={this.state.drink}
-                onValueChange={this.changeDrink.bind(this)}
-              >
-                <Picker.Item label="Coffee" value="Coffee" />
-                <Picker.Item label="Lattee" value="Lattee" />
-                <Picker.Item label="Espresso" value="Espresso" />
-              </Picker>
-            </Left>
-            <Body>
-              <Picker
-                note
-                mode="dropdown"
-                style={{ width: 150 }}
-                selectedValue={this.state.option}
-                onValueChange={this.changeOption.bind(this)}
-              >
-                <Picker.Item label="Small" value="Small" />
-                <Picker.Item label="Medium" value="Medium" />
-                <Picker.Item label="Large" value="Large" />
-              </Picker>
-            </Body>
-          </ListItem>
-          <Button full danger onPress={() => this.handleAdd()}>
-            <Text>Add</Text>
+        <List>{ListItems}</List>
+        {this.props.user ? (
+          <Button
+            light
+            onPress={() => this.props.logout()}
+            style={{
+              marginLeft: 140,
+              backgroundColor: "green",
+              marginTop: 50
+            }}
+            className="btn"
+          >
+            <Text style={{ color: "white" }}>
+              Logout
+              <Icon
+                type="MaterialCommunityIcons"
+                name="logout"
+                style={{ color: "white", fontSize: 15 }}
+              />
+            </Text>
           </Button>
-        </List>
+        ) : (
+          <Button
+            light
+            onPress={() => this.props.navigation.navigate("Login")}
+            style={{
+              marginLeft: 140,
+              backgroundColor: "green",
+              marginTop: 50
+            }}
+            className="btn"
+          >
+            <Text style={{ color: "white" }}>
+              Login
+              <Icon
+                type="MaterialCommunityIcons"
+                name="login"
+                style={{ color: "white", fontSize: 15 }}
+              />
+            </Text>
+          </Button>
+        )}
       </Content>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  cart: state.cart,
-  quantity: quantityCounter(state.cart.list)
+  cart: state.cart
 });
 
 const mapActionsToProps = dispatch => ({

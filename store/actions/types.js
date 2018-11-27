@@ -11,3 +11,6 @@ export const CHECKOUT = "CHECKOUT";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
 export const SET_ERROR = "SET_ERROR";
 export const LOGOUT_USER = "LOGOUT_USER";
+
+// Category
+export const FETCH_ITEMS = "FETCH_ITEMS";
