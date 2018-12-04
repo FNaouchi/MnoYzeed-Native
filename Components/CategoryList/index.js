@@ -2,6 +2,10 @@ import React, { Component } from "react";
 import { ImageBackground, View, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 import * as actionCreators from "../../store/actions/authActions";
+import HeaderButton from "../ItemsList/headerButton";
+import { Container } from "native-base";
+import { fetchItems } from "../../store/actions/category";
+
 // NativeBase Components
 import {
   List,
@@ -14,33 +18,15 @@ import {
   Content,
   Icon
 } from "native-base";
-
 // Style
 import styles from "./styles";
-
-// Actions
-import { quantityCounter } from "../../utilities/quantityCounter";
 
 class CoffeeList extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
       title: "Categories",
       headerLeft: null,
-      headerRight: (
-        <Button
-          light
-          transparent
-          onPress={() => navigation.navigate("CoffeeCart")}
-        >
-          <Text>
-            <Icon
-              type="FontAwesome"
-              name="coffee"
-              style={{ color: "white", fontSize: 15 }}
-            />
-          </Text>
-        </Button>
-      )
+      headerRight: <HeaderButton navigation={navigation} />
     };
   };
 
@@ -57,12 +43,21 @@ class CoffeeList extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {}
-
   handlePress(item) {
-    this.props.navigation.navigate("CoffeeDetail", {
-      item: item
+    this.props.navigation.navigate("ItemTypes", {
+      categoryId: item.id
     });
+  }
+  componentWillMount() {
+    this.interval = setInterval(() => this.props.fetchCategory(), 7000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.data !== this.props.data) {
+      this.forceUpdate();
+    }
   }
 
   renderItem(item) {
@@ -99,47 +94,6 @@ class CoffeeList extends Component {
     return (
       <Content>
         <List>{ListItems}</List>
-        {this.props.user ? (
-          <Button
-            light
-            onPress={() => this.props.logout()}
-            style={{
-              marginLeft: 140,
-              backgroundColor: "green",
-              marginTop: 50
-            }}
-            className="btn"
-          >
-            <Text style={{ color: "white" }}>
-              Logout
-              <Icon
-                type="MaterialCommunityIcons"
-                name="logout"
-                style={{ color: "white", fontSize: 15 }}
-              />
-            </Text>
-          </Button>
-        ) : (
-          <Button
-            light
-            onPress={() => this.props.navigation.navigate("Login")}
-            style={{
-              marginLeft: 140,
-              backgroundColor: "green",
-              marginTop: 50
-            }}
-            className="btn"
-          >
-            <Text style={{ color: "white" }}>
-              Login
-              <Icon
-                type="MaterialCommunityIcons"
-                name="login"
-                style={{ color: "white", fontSize: 15 }}
-              />
-            </Text>
-          </Button>
-        )}
       </Content>
     );
   }
@@ -147,15 +101,14 @@ class CoffeeList extends Component {
 
 const mapStateToProps = state => {
   return {
-    coffee: state.coffee,
     user: state.auth.user,
     category: state.cat.items,
-    isAuthenticated: state.auth.isAuthenticated,
-    quantity: quantityCounter(state.cart.list)
+    isAuthenticated: state.auth.isAuthenticated
   };
 };
 const mapActionsToProps = dispatch => ({
-  logout: () => dispatch(actionCreators.logout())
+  logout: () => dispatch(actionCreators.logout()),
+  fetchCategory: () => dispatch(fetchItems())
 });
 export default connect(
   mapStateToProps,

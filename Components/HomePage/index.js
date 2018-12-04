@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { createStackNavigator } from "react-navigation";
 
 // NativeBase Components
 import { Container } from "native-base";
@@ -16,7 +15,7 @@ import Nav from "../Navigation";
 
 class HomePage extends Component {
   componentDidMount() {
-    if (!this.props.category) this.props.fetchCategory();
+    this.props.fetchCategory();
   }
 
   render() {

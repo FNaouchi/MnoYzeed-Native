@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { ImageBackground, View, TouchableOpacity } from "react-native";
-import HeaderButton from "./headerButton";
+import HeaderButton from "../ItemsList/headerButton";
 import * as actionCreators from "../../store/actions/authActions";
-import { fetchItemDetail } from "../../store/actions/category";
+import * as actionDetail from "../../store/actions/category";
 // NativeBase Components
 import {
   Thumbnail,
@@ -17,8 +17,13 @@ import {
   ListItem,
   Picker,
   Content,
+  Form,
+  Label,
+  Item,
+  Input,
   Card,
-  CardItem
+  CardItem,
+  Container
 } from "native-base";
 
 // Style
@@ -34,13 +39,37 @@ class ItemsList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      timer: 0
+      amount: "",
+      user: ""
     };
+    this.handelBidding = this.handelBidding.bind(this);
   }
-
+  handelBidding(highestBid) {
+    if (this.props.user) {
+      text = this.state.amount;
+      let number;
+      if (text.match("^[0-9]*$")) {
+        number = parseInt(text, 10);
+        if (number <= parseInt(highestBid, 10))
+          alert("The value must be greater than " + highestBid);
+        else {
+          this.setState({ user: this.props.user.username });
+          this.props.postBiddings(
+            this.props.navigation.getParam("item", {}).id,
+            this.state
+          );
+          this.setState({ amount: "" });
+        }
+      } else {
+        alert("Please Enter integer value only");
+      }
+    } else alert("Please Login before making a bid");
+  }
   componentDidMount() {
+    let item = this.props.navigation.getParam("item", {});
+    this.props.fetchItemDetail(item.id);
     this.interval = setInterval(
-      () => this.setState({ timer: this.state.timer + 1 }),
+      () => this.props.fetchItemDetail(item.id),
       1000
     );
   }
@@ -49,7 +78,7 @@ class ItemsList extends Component {
     clearInterval(this.interval);
   }
 
-  getRemainingTime(dateTime) {
+  getRemainingTime(dateTime, name) {
     let date = new Date();
     let current_year = date.getFullYear(),
       current_month = date.getMonth() + 1,
@@ -138,7 +167,7 @@ class ItemsList extends Component {
                           this.setState({ bidding: false });
                         }
                         this.state.z = this.state.z + 1;
-                        return "The bidding is finished";
+                        return name + " won the auction";
                       }
                     }
                   }
@@ -150,83 +179,100 @@ class ItemsList extends Component {
       }
     }
   }
-
-  handlePress(item) {
-    this.props.navigation.navigate("ItemDetail", {
-      item: item
-    });
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.data !== this.props.data) {
-      this.forceUpdate();
+  biddeName(item, name) {
+    if (item.biddings && item.biddings.length) {
+      return "by " + name;
     }
   }
 
-  renderItem(item) {
+  renderItem(item, highestBid, name) {
     return (
-      <ImageBackground
-        source={{ uri: item.logo }}
-        key={item.id}
-        style={styles.background}
-      >
-        <View style={styles.overlay} />
-        <ListItem
-          style={styles.listitem}
-          button
-          onPress={() => this.handlePress(item)}
-        >
-          <Card style={styles.transparent}>
-            <CardItem style={styles.transparent}>
-              <Left>
-                <Text style={{ color: "white", fontSize: 22 }}>
-                  {item.name} {"\n"}
-                  {this.getRemainingTime(item.end_date)} {"\n"}
-                  {item.highest_bid} KD
-                </Text>
-              </Left>
-            </CardItem>
-          </Card>
-        </ListItem>
-      </ImageBackground>
+      <Content>
+        <Content>
+          <ImageBackground
+            source={{ uri: item.logo }}
+            key={item.id}
+            style={styles.background}
+          />
+        </Content>
+        <View />
+        <Text style={styles.text}>
+          {item.name} {"\n"}
+          {"\n"}
+          {item.description}
+          {"\n"}
+          {"\n"}
+          {highestBid} KD {this.biddeName(item, name)}
+          {"\n"}
+          {"\n"}
+          {this.getRemainingTime(item.end_date, name)}
+        </Text>
+        <Form>
+          <Item
+            rounded
+            style={{
+              backgroundColor: "white",
+              marginTop: 10,
+              marginBottom: 10
+            }}
+          >
+            <Input
+              autoCorrect={false}
+              autoCapitalize="none"
+              keyboardType={"numeric"}
+              name="Bidding"
+              value={this.state.amount}
+              onChangeText={value => this.setState({ amount: value })}
+            />
+          </Item>
+        </Form>
+        <Button full success onPress={() => this.handelBidding(highestBid)}>
+          <Text>Bid</Text>
+        </Button>
+      </Content>
     );
   }
   render() {
-    let itemTypeId = this.props.navigation.getParam("typeId", {});
-    let categoryId = this.props.navigation.getParam("categoryId", {});
-    let ListItems;
-    let itemType;
-    let itemCategory;
-    if (this.props.category) {
-      itemCategory = this.props.category.find(category => {
-        if (category.id === categoryId) {
-          return category;
-        }
-      });
-      if (itemCategory) {
-        itemType = itemCategory.item_types.find(type => {
-          if (type.id === itemTypeId) {
-            return type;
+    let itemDetail;
+    if (this.props.item) {
+      let amount = this.props.item.starting_price;
+      let name;
+      let price = this.props.item.starting_price;
+      let bidder;
+      let highestBid = parseInt(this.props.item.starting_price, 10);
+
+      if (this.props.item.biddings && this.props.item.biddings.length) {
+        bidder = this.props.item.biddings.map(bid =>
+          parseInt(price, 10) < parseInt(bid.amount, 10) ? bid : bidder
+        );
+        amount = bidder.map(bid => {
+          if (parseInt(highestBid, 10) < parseInt(bid.amount, 10)) {
+            (highestBid = bid.amount), (name = bid.user);
           }
         });
-        if (itemType)
-          ListItems = itemType.items.map(item => this.renderItem(item));
       }
+      itemDetail = this.renderItem(this.props.item, highestBid, name);
     }
     return (
       <Content>
-        <List>{ListItems}</List>
+        <List>{itemDetail}</List>
       </Content>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  category: state.cat.items
+  item: state.cat.item,
+  beddings: state.cat.beddings,
+  loading: state.cat.loading,
+  user: state.auth.user
 });
 
 const mapActionsToProps = dispatch => ({
-  logout: () => dispatch(actionCreators.logout())
+  logout: () => dispatch(actionCreators.logout()),
+  postBiddings: (itemId, bid) =>
+    dispatch(actionDetail.postBiddings(itemId, bid)),
+  fetchItemDetail: itemId => dispatch(actionDetail.fetchItemDetail(itemId))
 });
 
 export default connect(

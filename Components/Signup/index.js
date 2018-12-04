@@ -41,7 +41,6 @@ class Login extends Component {
   }
   handelSignup() {
     this.props.signup(this.state, this.props.navigation);
-    console.log(this.state);
   }
   render() {
     return (

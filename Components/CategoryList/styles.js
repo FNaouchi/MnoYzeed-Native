@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   background: {
     height: "100%",
-    width: null,
+    aspectRatio: 2.1 / 1,
     flex: 1
   },
   listitem: {

@@ -14,3 +14,6 @@ export const LOGOUT_USER = "LOGOUT_USER";
 
 // Category
 export const FETCH_ITEMS = "FETCH_ITEMS";
+export const FETCH_ITEM_DETAIL = "FETCH_ITEM_DETAIL";
+export const LOAD_ITEM_DETAIL = "LOAD_ITEM_DETAIL";
+export const POST_BIDDINGS = "POST_BIDDINGS";

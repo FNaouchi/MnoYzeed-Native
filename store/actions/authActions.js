@@ -39,14 +39,14 @@ export const checkForExpiredToken = () => {
 export const loginUser = (userData, navigation) => {
   return dispatch => {
     axios
-      .post("http://127.0.0.1:8000/api/login/", userData)
+      .post("http://104.248.37.122/api/login/", userData)
       .then(res => res.data)
       .then(user => {
         const decodedUser = jwt_decode(user.token);
         setAuthToken(user.token);
         dispatch(setCurrentUser(decodedUser));
         navigation.setParams({ isAuthenticated: true });
-        navigation.replace("CoffeeList");
+        navigation.pop();
       })
       .catch(error => console.log(error));
   };
@@ -55,7 +55,7 @@ export const loginUser = (userData, navigation) => {
 export const registerUser = (userData, navigation) => {
   return dispatch => {
     axios
-      .post("http://127.0.0.1:8000/api/register/", userData)
+      .post("http://104.248.37.122/api/register/", userData)
       .then(() =>
         dispatch(
           loginUser(
