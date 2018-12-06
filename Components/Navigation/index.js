@@ -11,6 +11,7 @@ import ItemsList from "../ItemsList";
 import ItemDetail from "../ItemDetail";
 import Login from "../Login";
 import Signup from "../Signup";
+import Profile from "../Profile";
 
 const HomeStack = createStackNavigator(
   {
@@ -78,7 +79,8 @@ const NewsStack = createStackNavigator(
 );
 const ProfileStack = createStackNavigator(
   {
-    Search: Login
+    Search: Profile,
+    Login: Login
   },
   {
     navigationOptions: {
@@ -99,8 +101,6 @@ const ProfileStack = createStackNavigator(
 const BottomTab = createBottomTabNavigator(
   {
     HomeTab: HomeStack,
-    SearchTab: SearchStack,
-    NewsTab: NewsStack,
     ProfileTab: ProfileStack
   },
   {

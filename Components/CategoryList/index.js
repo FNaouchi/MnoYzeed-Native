@@ -5,7 +5,7 @@ import * as actionCreators from "../../store/actions/authActions";
 import HeaderButton from "../ItemsList/headerButton";
 import { Container } from "native-base";
 import { fetchItems } from "../../store/actions/category";
-
+import * as profileCreators from "../../store/actions/Profile";
 // NativeBase Components
 import {
   List,
@@ -16,19 +16,20 @@ import {
   Text,
   Left,
   Content,
-  Icon
+  Thumbnail
 } from "native-base";
 // Style
 import styles from "./styles";
-
+import zainLogo from "../zain.png";
+import mnoYzeed from "../MnoYzeed.png";
 class CoffeeList extends Component {
-  static navigationOptions = ({ navigation }) => {
-    return {
-      title: "Categories",
-      headerLeft: null,
-      headerRight: <HeaderButton navigation={navigation} />
-    };
-  };
+  static navigationOptions = ({ navigation }) => ({
+    headerTitle: "Categories",
+    headerLeft: (
+      <Thumbnail square source={zainLogo} style={{ width: 120, height: 60 }} />
+    ),
+    headerRight: <HeaderButton navigation={navigation} />
+  });
 
   componenDidMount() {
     this.props.navigation.setParams({
@@ -49,7 +50,12 @@ class CoffeeList extends Component {
     });
   }
   componentWillMount() {
-    this.interval = setInterval(() => this.props.fetchCategory(), 7000);
+    this.interval = setInterval(() => {
+      this.props.fetchCategory();
+      if (this.props.user) {
+        this.props.fetchProfileDetail(this.props.user.user_id);
+      }
+    }, 7000);
   }
   componentWillUnmount() {
     clearInterval(this.interval);
@@ -88,6 +94,9 @@ class CoffeeList extends Component {
   }
   render() {
     let ListItems;
+    if (this.props.user) {
+      this.props.fetchProfileDetail(this.props.user.user_id);
+    }
     if (this.props.category) {
       ListItems = this.props.category.map(item => this.renderItem(item));
     }
@@ -108,7 +117,9 @@ const mapStateToProps = state => {
 };
 const mapActionsToProps = dispatch => ({
   logout: () => dispatch(actionCreators.logout()),
-  fetchCategory: () => dispatch(fetchItems())
+  fetchCategory: () => dispatch(fetchItems()),
+  fetchProfileDetail: userId =>
+    dispatch(profileCreators.fetchProfileDetail(userId))
 });
 export default connect(
   mapStateToProps,

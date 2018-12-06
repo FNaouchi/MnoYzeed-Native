@@ -92,7 +92,6 @@ class Login extends Component {
                 >
                   <Input
                     autoCorrect={false}
-                    secureTextEntry
                     autoCapitalize="none"
                     name="email"
                     onChangeText={value => this.setState({ email: value })}
@@ -107,7 +106,6 @@ class Login extends Component {
                 >
                   <Input
                     autoCorrect={false}
-                    secureTextEntry
                     autoCapitalize="none"
                     name="First Name"
                     onChangeText={value => this.setState({ firstName: value })}
@@ -122,7 +120,6 @@ class Login extends Component {
                 >
                   <Input
                     autoCorrect={false}
-                    secureTextEntry
                     autoCapitalize="none"
                     name="Last Name"
                     onChangeText={value => this.setState({ lastName: value })}
